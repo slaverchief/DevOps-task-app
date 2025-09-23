@@ -1,0 +1,240 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}{{ room.get_full_name }} - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-door-open"></i>
+        {{ room.get_full_name }}
+    </h1>
+    <div class="btn-group" role="group">
+        <a href="{% url 'auditorium_app:room_edit' room.id %}" class="btn btn-outline-secondary">
+            <i class="bi bi-pencil"></i> Редактировать
+        </a>
+        <a href="{% url 'auditorium_app:building_detail' room.building.id %}" class="btn btn-outline-info">
+            <i class="bi bi-building"></i> Корпус
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Основная информация -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Основная информация
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Корпус:</strong><br>
+                            <a href="{% url 'auditorium_app:building_detail' room.building.id %}" class="text-decoration-none">
+                                {{ room.building.name }}
+                            </a>
+                        </p>
+                        <p><strong>Номер комнаты:</strong><br>{{ room.room_number }}</p>
+                        <p><strong>Этаж:</strong><br>{{ room.floor }}</p>
+                        <p><strong>Расположение:</strong><br>{{ room.location_in_building }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Назначение:</strong><br>
+                            <span class="badge bg-info badge-custom">
+                                {{ room.get_purpose_display }}
+                            </span>
+                        </p>
+                        <p><strong>Тип помещения:</strong><br>
+                            <span class="badge bg-primary badge-custom">
+                                {{ room.get_room_type_display }}
+                            </span>
+                        </p>
+                        <p><strong>Подразделение:</strong><br>
+                            {% if room.department %}
+                                <a href="{% url 'auditorium_app:department_detail' room.department.id %}" class="text-decoration-none">
+                                    {{ room.department.name }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Не назначено</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if room.description %}
+                <div class="mt-3">
+                    <strong>Описание:</strong>
+                    <p class="mt-2">{{ room.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Размеры и расчеты -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-rulers"></i>
+                    Размеры и расчеты
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <div class="h4 text-primary">{{ room.width }} м</div>
+                            <small class="text-muted">Ширина</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <div class="h4 text-success">{{ room.length }} м</div>
+                            <small class="text-muted">Длина</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <div class="h4 text-info">{{ room.ceiling_height }} м</div>
+                            <small class="text-muted">Высота потолков</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h4 text-warning">{{ room.get_capacity_estimate }}</div>
+                        <small class="text-muted">Оценочная вместимость</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <div class="h3 text-primary">{{ room.get_area|floatformat:1 }} кв.м</div>
+                            <small class="text-muted">Площадь</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <div class="h3 text-success">{{ room.get_volume|floatformat:1 }} куб.м</div>
+                            <small class="text-muted">Объем</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h3 text-info">{{ room.get_capacity_estimate }} чел.</div>
+                        <small class="text-muted">Вместимость</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Дополнительная информация -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-clock"></i>
+                    Временные метки
+                </h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Создано:</strong><br>{{ room.created_at|date:"d.m.Y H:i" }}</p>
+                <p><strong>Обновлено:</strong><br>{{ room.updated_at|date:"d.m.Y H:i" }}</p>
+            </div>
+        </div>
+        
+        <!-- Быстрые действия -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-lightning"></i>
+                    Быстрые действия
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'auditorium_app:room_edit' room.id %}" class="btn btn-outline-primary">
+                        <i class="bi bi-pencil"></i> Редактировать
+                    </a>
+                    <a href="{% url 'auditorium_app:building_detail' room.building.id %}" class="btn btn-outline-info">
+                        <i class="bi bi-building"></i> Просмотр корпуса
+                    </a>
+                    {% if room.department %}
+                    <a href="{% url 'auditorium_app:department_detail' room.department.id %}" class="btn btn-outline-success">
+                        <i class="bi bi-diagram-3"></i> Подразделение
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Похожие помещения -->
+        {% if similar_rooms %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-collection"></i>
+                    Похожие помещения
+                </h6>
+            </div>
+            <div class="card-body">
+                {% for similar_room in similar_rooms %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <a href="{% url 'auditorium_app:room_detail' similar_room.id %}" class="text-decoration-none">
+                            {{ similar_room.room_number }}
+                        </a>
+                        <br><small class="text-muted">{{ similar_room.building.name }}</small>
+                    </div>
+                    <small class="text-muted">{{ similar_room.get_area|floatformat:0 }} кв.м</small>
+                </div>
+                {% if not forloop.last %}<hr class="my-2">{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Дополнительная информация -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Дополнительная информация
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Характеристики помещения:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Площадь: <strong>{{ room.get_area|floatformat:1 }} кв.м</strong></li>
+                            <li><i class="bi bi-check-circle text-success"></i> Объем: <strong>{{ room.get_volume|floatformat:1 }} куб.м</strong></li>
+                            <li><i class="bi bi-check-circle text-success"></i> Оценочная вместимость: <strong>{{ room.get_capacity_estimate }} человек</strong></li>
+                            <li><i class="bi bi-check-circle text-success"></i> Высота потолков: <strong>{{ room.ceiling_height }} м</strong></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Расположение:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-building text-primary"></i> Корпус: <strong>{{ room.building.name }}</strong></li>
+                            <li><i class="bi bi-layers text-primary"></i> Этаж: <strong>{{ room.floor }}</strong></li>
+                            <li><i class="bi bi-geo-alt text-primary"></i> Расположение: <strong>{{ room.location_in_building }}</strong></li>
+                            {% if room.department %}
+                            <li><i class="bi bi-diagram-3 text-primary"></i> Подразделение: <strong>{{ room.department.name }}</strong></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

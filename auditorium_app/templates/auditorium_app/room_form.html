@@ -1,0 +1,329 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}{{ title }} - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-door-open"></i>
+        {{ title }}
+    </h1>
+    <a href="{% url 'auditorium_app:rooms_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Назад к списку
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-door-open"></i>
+                    Информация о помещении
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.building.id_for_label }}" class="form-label">
+                                    {{ form.building.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.building }}
+                                {% if form.building.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.building.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.room_number.id_for_label }}" class="form-label">
+                                    {{ form.room_number.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.room_number }}
+                                {% if form.room_number.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.room_number.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.floor.id_for_label }}" class="form-label">
+                                    {{ form.floor.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.floor }}
+                                {% if form.floor.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.floor.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="{{ form.location_in_building.id_for_label }}" class="form-label">
+                                    {{ form.location_in_building.label }}
+                                </label>
+                                {{ form.location_in_building }}
+                                {% if form.location_in_building.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.location_in_building.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.width.id_for_label }}" class="form-label">
+                                    {{ form.width.label }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.width }}
+                                    <span class="input-group-text">м</span>
+                                </div>
+                                {% if form.width.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.width.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.length.id_for_label }}" class="form-label">
+                                    {{ form.length.label }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.length }}
+                                    <span class="input-group-text">м</span>
+                                </div>
+                                {% if form.length.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.length.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="{{ form.ceiling_height.id_for_label }}" class="form-label">
+                                    {{ form.ceiling_height.label }} <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    {{ form.ceiling_height }}
+                                    <span class="input-group-text">м</span>
+                                </div>
+                                {% if form.ceiling_height.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.ceiling_height.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.purpose.id_for_label }}" class="form-label">
+                                    {{ form.purpose.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.purpose }}
+                                {% if form.purpose.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.purpose.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.room_type.id_for_label }}" class="form-label">
+                                    {{ form.room_type.label }} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.room_type }}
+                                {% if form.room_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.room_type.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.department.id_for_label }}" class="form-label">
+                            {{ form.department.label }}
+                        </label>
+                        {{ form.department }}
+                        {% if form.department.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.department.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            {{ form.description.label }}
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.description.errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'auditorium_app:rooms_list' %}" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Сохранить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Предварительный расчет -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-calculator"></i>
+                    Предварительный расчет
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <div class="h5 mb-0 text-primary" id="preview-area">-</div>
+                            <small class="text-muted">Площадь (кв.м)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border-end">
+                            <div class="h5 mb-0 text-success" id="preview-volume">-</div>
+                            <small class="text-muted">Объем (куб.м)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h5 mb-0 text-info" id="preview-capacity">-</div>
+                        <small class="text-muted">Вместимость (чел.)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if room %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Дополнительная информация
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">Создано:</small><br>
+                        <strong>{{ room.created_at|date:"d.m.Y H:i" }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">Обновлено:</small><br>
+                        <strong>{{ room.updated_at|date:"d.m.Y H:i" }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const widthInput = document.getElementById('{{ form.width.id_for_label }}');
+    const lengthInput = document.getElementById('{{ form.length.id_for_label }}');
+    const heightInput = document.getElementById('{{ form.ceiling_height.id_for_label }}');
+    
+    const areaPreview = document.getElementById('preview-area');
+    const volumePreview = document.getElementById('preview-volume');
+    const capacityPreview = document.getElementById('preview-capacity');
+    
+    function updatePreview() {
+        const width = parseFloat(widthInput.value) || 0;
+        const length = parseFloat(lengthInput.value) || 0;
+        const height = parseFloat(heightInput.value) || 0;
+        
+        if (width > 0 && length > 0) {
+            const area = width * length;
+            areaPreview.textContent = area.toFixed(2);
+            
+            if (height > 0) {
+                const volume = area * height;
+                volumePreview.textContent = volume.toFixed(2);
+                
+                // Оценочная вместимость (2 кв.м на человека)
+                const capacity = Math.floor(area / 2);
+                capacityPreview.textContent = capacity;
+            } else {
+                volumePreview.textContent = '-';
+                capacityPreview.textContent = '-';
+            }
+        } else {
+            areaPreview.textContent = '-';
+            volumePreview.textContent = '-';
+            capacityPreview.textContent = '-';
+        }
+    }
+    
+    widthInput.addEventListener('input', updatePreview);
+    lengthInput.addEventListener('input', updatePreview);
+    heightInput.addEventListener('input', updatePreview);
+    
+    // Инициализация при загрузке страницы
+    updatePreview();
+});
+</script>
+{% endblock %}

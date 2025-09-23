@@ -1,0 +1,248 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}Главная - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-house"></i>
+        Главная страница
+    </h1>
+    <div class="btn-group" role="group">
+        <a href="{% url 'auditorium_app:building_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Добавить корпус
+        </a>
+        <a href="{% url 'auditorium_app:room_create' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Добавить помещение
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Общая статистика -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="bi bi-building display-4 mb-2"></i>
+                <div class="stat-number">{{ total_buildings }}</div>
+                <div>Корпусов</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="bi bi-door-open display-4 mb-2"></i>
+                <div class="stat-number">{{ total_rooms }}</div>
+                <div>Помещений</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="bi bi-diagram-3 display-4 mb-2"></i>
+                <div class="stat-number">{{ total_departments }}</div>
+                <div>Подразделений</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <i class="bi bi-rulers display-4 mb-2"></i>
+                <div class="stat-number">{{ total_area|floatformat:0 }}</div>
+                <div>кв.м общая площадь</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-building"></i>
+                    Статистика по корпусам
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Корпус</th>
+                                <th>Помещений</th>
+                                <th>Площадь</th>
+                                <th>Объем</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in buildings_stats %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'auditorium_app:building_detail' stat.building.id %}" class="text-decoration-none">
+                                        {{ stat.building.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ stat.rooms_count }}</span>
+                                </td>
+                                <td>{{ stat.area|floatformat:1 }} кв.м</td>
+                                <td>{{ stat.volume|floatformat:1 }} куб.м</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pie-chart"></i>
+                    Распределение по типам помещений
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="roomTypesChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Быстрые действия -->
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-building display-4 text-primary mb-3"></i>
+                <h5 class="card-title">Управление корпусами</h5>
+                <p class="card-text">Просмотр, добавление и редактирование информации о корпусах университета.</p>
+                <a href="{% url 'auditorium_app:buildings_list' %}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> Перейти
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-door-open display-4 text-success mb-3"></i>
+                <h5 class="card-title">Управление помещениями</h5>
+                <p class="card-text">Учет всех помещений, расчет площадей и объемов, управление назначением.</p>
+                <a href="{% url 'auditorium_app:rooms_list' %}" class="btn btn-success">
+                    <i class="bi bi-arrow-right"></i> Перейти
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-diagram-3 display-4 text-info mb-3"></i>
+                <h5 class="card-title">Структура подразделений</h5>
+                <p class="card-text">Просмотр иерархической структуры подразделений университета.</p>
+                <a href="{% url 'auditorium_app:departments_list' %}" class="btn btn-info">
+                    <i class="bi bi-arrow-right"></i> Перейти
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Дополнительная информация -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    О системе
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Основные возможности:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Учет корпусов и помещений</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Расчет площадей и объемов</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Управление структурой подразделений</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Статистика и отчеты</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Общая статистика:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-rulers text-primary"></i> Общая площадь: <strong>{{ total_area|floatformat:1 }} кв.м</strong></li>
+                            <li><i class="bi bi-box text-primary"></i> Общий объем: <strong>{{ total_volume|floatformat:1 }} куб.м</strong></li>
+                            <li><i class="bi bi-people text-primary"></i> Оценочная вместимость: <strong>{{ estimated_capacity }} человек</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// График распределения по типам помещений
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('roomTypesChart').getContext('2d');
+    const roomTypesData = {
+        {% for room_type, data in room_types_stats.items %}
+        '{{ room_type }}': {{ data.count }},
+        {% endfor %}
+    };
+    
+    const labels = Object.keys(roomTypesData);
+    const data = Object.values(roomTypesData);
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#FF6384',
+                    '#C9CBCF'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}Помещения - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-door-open"></i>
+        Помещения университета
+    </h1>
+    <a href="{% url 'auditorium_app:room_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Добавить помещение
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Фильтры -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <i class="bi bi-funnel"></i>
+            Фильтры
+        </h6>
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="building" class="form-label">Корпус</label>
+                <select name="building" id="building" class="form-select">
+                    <option value="">Все корпуса</option>
+                    {% for building in buildings %}
+                    <option value="{{ building.id }}" {% if building_filter == building.id|stringformat:"s" %}selected{% endif %}>
+                        {{ building.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="purpose" class="form-label">Назначение</label>
+                <select name="purpose" id="purpose" class="form-select">
+                    <option value="">Все назначения</option>
+                    {% for value, label in purpose_choices %}
+                    <option value="{{ value }}" {% if purpose_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="room_type" class="form-label">Тип помещения</label>
+                <select name="room_type" id="room_type" class="form-select">
+                    <option value="">Все типы</option>
+                    {% for value, label in room_type_choices %}
+                    <option value="{{ value }}" {% if room_type_filter == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Применить
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Список помещений -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <i class="bi bi-list"></i>
+            Список помещений
+            {% if rooms.paginator.count %}
+                <span class="badge bg-primary ms-2">{{ rooms.paginator.count }}</span>
+            {% endif %}
+        </h6>
+    </div>
+    <div class="card-body p-0">
+        {% if rooms %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Помещение</th>
+                        <th>Корпус</th>
+                        <th>Этаж</th>
+                        <th>Назначение</th>
+                        <th>Площадь</th>
+                        <th>Объем</th>
+                        <th>Подразделение</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for room in rooms %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">
+                                    {% if room.room_type == 'lecture' %}
+                                        <i class="bi bi-chalkboard text-primary"></i>
+                                    {% elif room.room_type == 'office' %}
+                                        <i class="bi bi-person-workspace text-info"></i>
+                                    {% elif room.room_type == 'laboratory' %}
+                                        <i class="bi bi-flask text-warning"></i>
+                                    {% elif room.room_type == 'library' %}
+                                        <i class="bi bi-book text-success"></i>
+                                    {% else %}
+                                        <i class="bi bi-door-open text-secondary"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <strong>{{ room.room_number }}</strong>
+                                    {% if room.description %}
+                                    <br><small class="text-muted">{{ room.description|truncatewords:5 }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'auditorium_app:building_detail' room.building.id %}" class="text-decoration-none">
+                                {{ room.building.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">{{ room.floor }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info badge-custom">
+                                {{ room.get_purpose_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>{{ room.get_area|floatformat:1 }} кв.м</strong>
+                        </td>
+                        <td>
+                            {{ room.get_volume|floatformat:1 }} куб.м
+                        </td>
+                        <td>
+                            {% if room.department %}
+                            <a href="{% url 'auditorium_app:department_detail' room.department.id %}" class="text-decoration-none">
+                                {{ room.department.name }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">Не назначено</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'auditorium_app:room_detail' room.id %}" class="btn btn-outline-primary" title="Просмотр">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'auditorium_app:room_edit' room.id %}" class="btn btn-outline-secondary" title="Редактировать">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Пагинация -->
+        {% if rooms.has_other_pages %}
+        <div class="card-footer">
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% if rooms.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if building_filter %}&building={{ building_filter }}{% endif %}{% if purpose_filter %}&purpose={{ purpose_filter }}{% endif %}{% if room_type_filter %}&room_type={{ room_type_filter }}{% endif %}">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ rooms.previous_page_number }}{% if building_filter %}&building={{ building_filter }}{% endif %}{% if purpose_filter %}&purpose={{ purpose_filter }}{% endif %}{% if room_type_filter %}&room_type={{ room_type_filter }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="page-item active">
+                        <span class="page-link">
+                            {{ rooms.number }} из {{ rooms.paginator.num_pages }}
+                        </span>
+                    </li>
+                    
+                    {% if rooms.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ rooms.next_page_number }}{% if building_filter %}&building={{ building_filter }}{% endif %}{% if purpose_filter %}&purpose={{ purpose_filter }}{% endif %}{% if room_type_filter %}&room_type={{ room_type_filter }}{% endif %}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ rooms.paginator.num_pages }}{% if building_filter %}&building={{ building_filter }}{% endif %}{% if purpose_filter %}&purpose={{ purpose_filter }}{% endif %}{% if room_type_filter %}&room_type={{ room_type_filter }}{% endif %}">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-door-open display-1 text-muted"></i>
+            <h3 class="text-muted mt-3">Помещения не найдены</h3>
+            <p class="text-muted">
+                {% if building_filter or purpose_filter or room_type_filter %}
+                    Попробуйте изменить параметры фильтрации.
+                {% else %}
+                    Начните с добавления первого помещения.
+                {% endif %}
+            </p>
+            <a href="{% url 'auditorium_app:room_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Добавить помещение
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

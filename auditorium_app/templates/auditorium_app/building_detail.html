@@ -1,0 +1,324 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}{{ building.name }} - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-building"></i>
+        {{ building.name }}
+    </h1>
+    <div class="btn-group" role="group">
+        <a href="{% url 'auditorium_app:building_edit' building.id %}" class="btn btn-outline-secondary">
+            <i class="bi bi-pencil"></i> Редактировать
+        </a>
+        <a href="{% url 'auditorium_app:building_faculties' building.id %}" class="btn btn-outline-info">
+            <i class="bi bi-diagram-3"></i> Структура подразделений
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Информация о корпусе -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Основная информация
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Адрес:</strong><br>{{ building.address }}</p>
+                        <p><strong>Количество этажей:</strong><br>{{ building.floors_count }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Создано:</strong><br>{{ building.created_at|date:"d.m.Y H:i" }}</p>
+                        <p><strong>Обновлено:</strong><br>{{ building.updated_at|date:"d.m.Y H:i" }}</p>
+                    </div>
+                </div>
+                {% if building.description %}
+                <div class="mt-3">
+                    <strong>Описание:</strong>
+                    <p class="mt-2">{{ building.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-bar-chart"></i>
+                    Статистика
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="border-end">
+                            <div class="h4 text-primary">{{ total_rooms }}</div>
+                            <small class="text-muted">Помещений</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="h4 text-success">{{ total_area|floatformat:0 }}</div>
+                        <small class="text-muted">кв.м</small>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="h4 text-info">{{ total_volume|floatformat:0 }}</div>
+                        <small class="text-muted">куб.м</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Статистика по этажам -->
+{% if floors_stats %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-layers"></i>
+                    Статистика по этажам
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Этаж</th>
+                                <th>Помещений</th>
+                                <th>Площадь</th>
+                                <th>Объем</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for floor, stats in floors_stats.items %}
+                            <tr>
+                                <td><span class="badge bg-secondary">{{ floor }}</span></td>
+                                <td>{{ stats.rooms }}</td>
+                                <td>{{ stats.area|floatformat:1 }} кв.м</td>
+                                <td>{{ stats.volume|floatformat:1 }} куб.м</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Подразделения в корпусе -->
+{% if departments_stats %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-diagram-3"></i>
+                    Подразделения в корпусе
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Подразделение</th>
+                                <th>Тип</th>
+                                <th>Помещений</th>
+                                <th>Площадь</th>
+                                <th>Объем</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in departments_stats %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'auditorium_app:department_detail' stat.department.id %}" class="text-decoration-none">
+                                        {{ stat.department.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info badge-custom">
+                                        {{ stat.department.get_department_type_display }}
+                                    </span>
+                                </td>
+                                <td>{{ stat.rooms_count }}</td>
+                                <td>{{ stat.area|floatformat:1 }} кв.м</td>
+                                <td>{{ stat.volume|floatformat:1 }} куб.м</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Список помещений -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-door-open"></i>
+                    Помещения в корпусе
+                </h6>
+                <a href="{% url 'auditorium_app:room_create' %}?building={{ building.id }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle"></i> Добавить помещение
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if rooms %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Помещение</th>
+                                <th>Этаж</th>
+                                <th>Назначение</th>
+                                <th>Площадь</th>
+                                <th>Объем</th>
+                                <th>Подразделение</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for room in rooms %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2">
+                                            {% if room.room_type == 'lecture' %}
+                                                <i class="bi bi-chalkboard text-primary"></i>
+                                            {% elif room.room_type == 'office' %}
+                                                <i class="bi bi-person-workspace text-info"></i>
+                                            {% elif room.room_type == 'laboratory' %}
+                                                <i class="bi bi-flask text-warning"></i>
+                                            {% elif room.room_type == 'library' %}
+                                                <i class="bi bi-book text-success"></i>
+                                            {% else %}
+                                                <i class="bi bi-door-open text-secondary"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <strong>{{ room.room_number }}</strong>
+                                            {% if room.description %}
+                                            <br><small class="text-muted">{{ room.description|truncatewords:5 }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ room.floor }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info badge-custom">
+                                        {{ room.get_purpose_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong>{{ room.get_area|floatformat:1 }} кв.м</strong>
+                                </td>
+                                <td>
+                                    {{ room.get_volume|floatformat:1 }} куб.м
+                                </td>
+                                <td>
+                                    {% if room.department %}
+                                    <a href="{% url 'auditorium_app:department_detail' room.department.id %}" class="text-decoration-none">
+                                        {{ room.department.name }}
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">Не назначено</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'auditorium_app:room_detail' room.id %}" class="btn btn-outline-primary" title="Просмотр">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'auditorium_app:room_edit' room.id %}" class="btn btn-outline-secondary" title="Редактировать">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Пагинация -->
+                {% if rooms.has_other_pages %}
+                <div class="card-footer">
+                    <nav aria-label="Навигация по страницам">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if rooms.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rooms.previous_page_number }}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    {{ rooms.number }} из {{ rooms.paginator.num_pages }}
+                                </span>
+                            </li>
+                            
+                            {% if rooms.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rooms.next_page_number }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ rooms.paginator.num_pages }}">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-door-open display-1 text-muted"></i>
+                    <h3 class="text-muted mt-3">Помещения не найдены</h3>
+                    <p class="text-muted">В этом корпусе пока нет помещений.</p>
+                    <a href="{% url 'auditorium_app:room_create' %}?building={{ building.id }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Добавить первое помещение
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

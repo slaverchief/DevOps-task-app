@@ -1,0 +1,40 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}Подразделения - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-diagram-3"></i>
+        Структура подразделений
+    </h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-diagram-3"></i>
+                    Иерархическая структура подразделений
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if departments_tree %}
+                    {% for dept_tree in departments_tree %}
+                        {% include 'auditorium_app/department_tree_item.html' with department=dept_tree.department level=dept_tree.level children=dept_tree.children %}
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-diagram-3 display-1 text-muted"></i>
+                    <h3 class="text-muted mt-3">Подразделения не найдены</h3>
+                    <p class="text-muted">Структура подразделений пока не создана.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

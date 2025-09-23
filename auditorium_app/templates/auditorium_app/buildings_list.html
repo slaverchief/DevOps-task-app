@@ -1,0 +1,137 @@
+{% extends 'auditorium_app/base.html' %}
+
+{% block title %}Корпуса - Учет аудиторного фонда университета{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">
+        <i class="bi bi-building"></i>
+        Корпуса университета
+    </h1>
+    <a href="{% url 'auditorium_app:building_create' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Добавить корпус
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% for building in buildings %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-building"></i>
+                    {{ building.name }}
+                </h5>
+                <div class="btn-group btn-group-sm" role="group">
+                    <a href="{% url 'auditorium_app:building_detail' building.id %}" class="btn btn-outline-primary">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="{% url 'auditorium_app:building_edit' building.id %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <i class="bi bi-geo-alt"></i>
+                        {{ building.address }}
+                    </small>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="h5 mb-0 text-primary">{{ building.floors_count }}</div>
+                            <small class="text-muted">Этажей</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <div class="h5 mb-0 text-success">{{ building.rooms_count }}</div>
+                            <small class="text-muted">Помещений</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="h5 mb-0 text-info">{{ building.total_area|floatformat:0 }}</div>
+                        <small class="text-muted">кв.м</small>
+                    </div>
+                </div>
+                
+                {% if building.description %}
+                <div class="mt-3">
+                    <small class="text-muted">{{ building.description|truncatewords:15 }}</small>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i>
+                        Обновлено {{ building.updated_at|date:"d.m.Y" }}
+                    </small>
+                    <a href="{% url 'auditorium_app:building_detail' building.id %}" class="btn btn-sm btn-primary">
+                        Подробнее <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="bi bi-building display-1 text-muted"></i>
+            <h3 class="text-muted mt-3">Корпуса не найдены</h3>
+            <p class="text-muted">Начните с добавления первого корпуса университета.</p>
+            <a href="{% url 'auditorium_app:building_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Добавить корпус
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Общая статистика -->
+{% if buildings %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bar-chart"></i>
+                    Общая статистика по корпусам
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <div class="h3 text-primary">{{ buildings|length }}</div>
+                            <small class="text-muted">Всего корпусов</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <div class="h3 text-success">{{ total_rooms_count }}</div>
+                            <small class="text-muted">Всего помещений</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="border-end">
+                            <div class="h3 text-info">{{ total_area_sum|floatformat:0 }}</div>
+                            <small class="text-muted">Общая площадь (кв.м)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="h3 text-warning">{{ total_volume_sum|floatformat:0 }}</div>
+                        <small class="text-muted">Общий объем (куб.м)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
