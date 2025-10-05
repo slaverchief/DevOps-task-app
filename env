@@ -1,0 +1,4 @@
+export POSTGRES_DB=app_db
+export POSTGRES_USER=django 
+export POSTGRES_PASSWORD=1209
+export POSTGRES_HOST=localhost
