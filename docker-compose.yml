@@ -1,0 +1,30 @@
+
+
+services:
+  django:
+    build: .
+    environment:
+      PYTHONUNBUFFERED: 1
+      POSTGRES_DB: "app_db"
+      POSTGRES_USER: "django"
+      POSTGRES_PASSWORD: "1209"
+      POSTGRES_HOST: "pgdb"
+    container_name: django
+    command: sh -c 'python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000'
+    ports:
+      - 8000:8000
+    depends_on:
+      - pgdb
+
+  pgdb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=app_db
+      - POSTGRES_USER=django
+      - POSTGRES_PASSWORD=1209
+    container_name: pgdb
+    volumes:
+      - pg_db_data:/var/lib/postgresql/data/
+
+volumes:
+  pg_db_data:
