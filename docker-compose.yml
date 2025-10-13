@@ -2,7 +2,7 @@
 
 services:
   django:
-    build: slaverchief/my-app:dev
+    image: slaverchief/my-app:dev
     environment:
       PYTHONUNBUFFERED: 1
       POSTGRES_DB: "app_db"
