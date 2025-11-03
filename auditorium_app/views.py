@@ -1,10 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from django.db.models import Sum, Count
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
-from .models import Building, Department, Room, BuildingFloor
+from .models import Building, Department, Room
 from .forms import BuildingForm, RoomForm
 
 

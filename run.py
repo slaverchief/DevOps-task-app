@@ -6,7 +6,6 @@
 import os
 import sys
 import subprocess
-import django
 
 def main():
     print("=" * 60)

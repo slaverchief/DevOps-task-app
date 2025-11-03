@@ -1,5 +1,5 @@
 from django import forms
-from .models import Building, Room, Department
+from .models import Building, Room
 
 
 class BuildingForm(forms.ModelForm):
