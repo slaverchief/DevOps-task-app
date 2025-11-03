@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from .models import Building, Department, Room
 from .forms import BuildingForm, RoomForm
-
+import django.db.backends
 
 def index(request):
     """Главная страница с общей статистикой"""
