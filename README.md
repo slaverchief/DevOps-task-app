@@ -35,6 +35,22 @@
 - Удаление помещений
 - Фильтрация по корпусам, назначению и типу
 
+### Запуск тестов
+
+#### Bash
+```bash
+cd DevOps-task-app
+DJANGO_SETTINGS_MODULE=university_auditorium.settings_tests coverage run --source=auditorium_app manage.py test
+coverage report -m
+```
+
+#### PowerShell
+```powershell
+cd DevOps-task-app
+$env:DJANGO_SETTINGS_MODULE="university_auditorium.settings_tests"; coverage run --source=auditorium_app manage.py test
+coverage report -m
+```
+
 ## Технические требования
 
 - Python 3.8+
