@@ -133,12 +133,15 @@ class Room(models.Model):
 
     def clean(self):
         """Валидация данных"""
-        if self.width <= 0 or self.length <= 0:
-            raise ValidationError("Ширина и длина должны быть положительными числами")
-        if self.ceiling_height <= 0:
-            raise ValidationError("Высота потолков должна быть положительным числом")
-        if self.floor < 1:
-            raise ValidationError("Этаж должен быть положительным числом")
+        if self.width is not None and self.length is not None:
+            if self.width <= 0 or self.length <= 0:
+                raise ValidationError("Ширина и длина должны быть положительными числами")
+        if self.ceiling_height is not None:
+            if self.ceiling_height <= 0:
+                raise ValidationError("Высота потолков должна быть положительным числом")
+        if self.floor is not None:
+            if self.floor < 1:
+                raise ValidationError("Этаж должен быть положительным числом")
 
     def get_area(self):
         """Получить площадь помещения в квадратных метрах"""
