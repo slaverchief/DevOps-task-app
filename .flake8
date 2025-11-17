@@ -11,7 +11,7 @@ exclude =
     auditorium_app/tests/,
     *migrations*,
     *pycache*,
-    ./university_auditorium/settings.py
+    university_auditorium/
 
 # Максимальная длина строки (опционально, для совместимости)
 max-line-length = 88
