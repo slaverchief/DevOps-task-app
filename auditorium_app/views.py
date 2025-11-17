@@ -238,7 +238,7 @@ def department_detail(request, department_id):
         'total_area': total_area,
         'total_volume': total_volume,
     }
-    #return render(request, 'auditorium_app/department_detail.html', context)
+    return render(request, 'auditorium_app/department_detail.html', context)
 
 
 def building_faculties(request, building_id):
