@@ -8,7 +8,7 @@ ignore = E,W,C
 # Настройки для исключения директорий
 exclude =
     .venv/,
-    tests/,
+    *tests/,
     *migrations*,
     *pycache*
 
