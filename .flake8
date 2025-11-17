@@ -8,9 +8,10 @@ ignore = E,W,C
 # Настройки для исключения директорий
 exclude =
     .venv/,
-    *tests/,
+    auditorium_app/tests/,
     *migrations*,
-    *pycache*
+    *pycache*,
+    ./university_auditorium/settings.py
 
 # Максимальная длина строки (опционально, для совместимости)
 max-line-length = 88
