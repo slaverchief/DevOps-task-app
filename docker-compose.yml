@@ -17,14 +17,14 @@ services:
       - pgdb
 
   pgdb:
-    image: postgres
+    image: postgres:17.7
     environment:
       - POSTGRES_DB=app_db
       - POSTGRES_USER=django
       - POSTGRES_PASSWORD=1209
     container_name: pgdb
     volumes:
-      - pg_db_data:/var/lib/postgresql/data/
+      - pg_db_data:/var/lib/postgresql
 
 volumes:
   pg_db_data:
